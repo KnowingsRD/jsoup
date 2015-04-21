@@ -627,6 +627,64 @@ public class Whitelist {
         return !tagName.equals(":all") && isSafeAttribute(":all", el, attr);
     }
 
+    /**
+     * Tells whether or not the given tag is already configured.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @return true or false.
+     */
+    public boolean isTagConfigured(String tagName) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName)) {
+    		isConfigured = tagNames.contains(TagName.valueOf(tagName));
+    	}
+    	return isConfigured;
+    }
+    
+    /**
+     * Tells whether or not the given attribute is already configured for the given tag.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @param attributeKey the attribute to consider. When null or empty false is returned.
+     * @return true or false.
+     */
+    public boolean isAttributeConfigured(String tagName, String attributeKey) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		isConfigured = tagNames.contains(tag) && attributes.containsKey(tag) && attributes.get(tag).contains(attr);
+    	}
+    	return isConfigured;
+    }
+    
+    /**
+     * Tells whether or not the given protocol is already configured for the given tag on the given attribute.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @param attributeKey the attribute to consider. When null or empty false is returned.
+     * @param protocol the protocol to consider. When null or empty false is returned.
+     * @return true or false
+     */
+    public boolean isProtocolConfigured(String tagName, String attributeKey, String protocol) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey) && !StringUtil.isBlank(protocol)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		Protocol prot = Protocol.valueOf(protocol);
+    		isConfigured = protocols.containsKey(tag) && protocols.get(tag).containsKey(attr) && protocols.get(tag).get(attr).contains(prot);
+    	}
+    	return isConfigured;
+    }
+    
+    public boolean isDomainConfigured(String tagName, String attributeKey, String domain) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey) && !StringUtil.isBlank(domain)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		UrlDomain dom = UrlDomain.valueOf(domain);
+    		isConfigured = domains.containsKey(tag) && domains.get(tag).containsKey(attr) && domains.get(tag).get(attr).contains(dom);
+    	}
+    	return isConfigured;
+    }
+    
     private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {
         // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.
         // rels without a baseuri get removed

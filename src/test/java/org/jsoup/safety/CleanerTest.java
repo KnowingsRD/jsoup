@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  Tests for the cleaner.
 
- @author Jonathan Hedley, jonathan@hedley.net */
+ @author Jonathan Hedley, jonathan@hedley.net, developers@knowings.com*/
 public class CleanerTest {
     @Test public void simpleBehaviourTest() {
         String h = "<div><p class=foo><a href='http://evil.com'>Hello <b id=bar>there</b>!</a></div>";
