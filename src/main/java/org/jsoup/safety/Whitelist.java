@@ -451,10 +451,10 @@ public class Whitelist {
     Add allowed URL domain for an element's URL attribute. This restricts the possible values of the attribute to
     URLs with the defined protocol.
     <p>
-    E.g.: <code>addDomains("a", "href", "jsoup.org")</code>
+    E.g.: <code>addDomains("a", "href", "knowings.fr")</code>
     </p>
 
-    @param tag       Tag the allowed domain is for
+    @param tag       Tag the URL domain is for
     @param key       Attribute key
     @param domains List of valid domains
     @return this, for chaining
@@ -529,7 +529,7 @@ public class Whitelist {
     }
     
     /**
-     Remove allowed domains for an element's URL attribute.
+     Remove allowed URL protocols for an element's URL attribute.
      <p>
      E.g.: <code>removeDomains("a", "href", "knowings.fr")</code>
      </p>
@@ -627,6 +627,64 @@ public class Whitelist {
         return !tagName.equals(":all") && isSafeAttribute(":all", el, attr);
     }
 
+    /**
+     * Tells whether or not the given tag is already configured.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @return true or false.
+     */
+    public boolean isTagConfigured(String tagName) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName)) {
+    		isConfigured = tagNames.contains(TagName.valueOf(tagName));
+    	}
+    	return isConfigured;
+    }
+    
+    /**
+     * Tells whether or not the given attribute is already configured for the given tag.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @param attributeKey the attribute to consider. When null or empty false is returned.
+     * @return true or false.
+     */
+    public boolean isAttributeConfigured(String tagName, String attributeKey) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		isConfigured = tagNames.contains(tag) && attributes.containsKey(tag) && attributes.get(tag).contains(attr);
+    	}
+    	return isConfigured;
+    }
+    
+    /**
+     * Tells whether or not the given protocol is already configured for the given tag on the given attribute.
+     * @param tagName the tag to consider. When null or empty false is returned.
+     * @param attributeKey the attribute to consider. When null or empty false is returned.
+     * @param protocol the protocol to consider. When null or empty false is returned.
+     * @return true or false
+     */
+    public boolean isProtocolConfigured(String tagName, String attributeKey, String protocol) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey) && !StringUtil.isBlank(protocol)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		Protocol prot = Protocol.valueOf(protocol);
+    		isConfigured = protocols.containsKey(tag) && protocols.get(tag).containsKey(attr) && protocols.get(tag).get(attr).contains(prot);
+    	}
+    	return isConfigured;
+    }
+    
+    public boolean isDomainConfigured(String tagName, String attributeKey, String domain) {
+    	boolean isConfigured = false;
+    	if (!StringUtil.isBlank(tagName) && !StringUtil.isBlank(attributeKey) && !StringUtil.isBlank(domain)) {
+    		TagName tag = TagName.valueOf(tagName);
+    		AttributeKey attr = AttributeKey.valueOf(attributeKey);
+    		UrlDomain dom = UrlDomain.valueOf(domain);
+    		isConfigured = domains.containsKey(tag) && domains.get(tag).containsKey(attr) && domains.get(tag).get(attr).contains(dom);
+    	}
+    	return isConfigured;
+    }
+    
     private boolean testValidProtocol(Element el, Attribute attr, Set<Protocol> protocols) {
         // try to resolve relative urls to abs, and optionally update the attribute so output html has abs.
         // rels without a baseuri get removed
@@ -670,18 +728,21 @@ public class Whitelist {
     	_url = el.absUrl(attrKey.toString());
     	if (_url.length() == 0) {
     		_url = el.attr(attrKey.toString());
-    		_url = ((_url.startsWith("//"))? "http:" : "http://"  ) + _url;
+    		if (_url.startsWith("//")) {
+    			_url = "http:" + _url; 
+    		} else {
+    			_url = "http://" + _url;
+    		}
     	}
     	try {
     		URL url = new URL(_url);
     		String host = url.getHost();
-    		if (!StringUtil.isBlank(host)) {
-    			host = host.toLowerCase();
+    		if (host != null) {
     			Iterator<UrlDomain> it = domains.iterator();
     			boolean isValid = false;
     			while (it.hasNext() && !isValid) {
-    				String domain = it.next().toString().toLowerCase();
-    				isValid = host.equals(domain) || host.endsWith("."+domain); 
+    				UrlDomain domain = it.next();
+    				isValid = host.toLowerCase().endsWith(domain.toString().toLowerCase()); 
     			}
     			return isValid;
     		}

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  Tests for the cleaner.
 
- @author Jonathan Hedley, jonathan@hedley.net */
+ @author Jonathan Hedley, jonathan@hedley.net, developers@knowings.com*/
 public class CleanerTest {
     @Test public void simpleBehaviourTest() {
         String h = "<div><p class=foo><a href='http://evil.com'>Hello <b id=bar>there</b>!</a></div>";
@@ -248,18 +248,15 @@ public class CleanerTest {
     	Whitelist whitelist = Whitelist.relaxed();
     	
     	// Tests upon href attribute
-    	whitelist.addDomains("a", "href", "jsoup.org");
+    	whitelist.addDomains("a", "href", "knowings.fr");
     	assertTrue(Jsoup.isValid("<a>Success</a>", whitelist));
     	assertTrue(Jsoup.isValid("<a title=\"success\">Success</a>", whitelist));
     	// Anchor aren't supported by default
     	assertFalse(Jsoup.isValid("<a href=\"#success\">Success</a>", whitelist));
     	// Subdomain should be accepted
-    	assertTrue(Jsoup.isValid("<a href=\"http://jsoup.org:8080/resources/success.html\">Success</a>", whitelist));
-    	assertTrue(Jsoup.isValid("<a href=\"http://cdn.jsoup.org:8080/resources/success.html\">Success</a>", whitelist));
-    	assertFalse(Jsoup.isValid("<a href=\"http://eviljsoup.org:8080/resources/success.html\">Success</a>", whitelist));
-    	assertFalse(Jsoup.isValid("<a href=\"http://cdn.eviljsoup.org:8080/resources/success.html\">Success</a>", whitelist));
+    	assertTrue(Jsoup.isValid("<a href=\"http://cdn.knowings.fr:8080/resources/success.html\">Success</a>", whitelist));
     	// Without proper protocol it should behave as usual
-    	assertFalse(Jsoup.isValid("<a href=\"//cdn.jsoup.org:8080/resources/success.html\">Success</a>", whitelist));
+    	assertFalse(Jsoup.isValid("<a href=\"//cdn.knowings.fr:8080/resources/success.html\">Success</a>", whitelist));
     	// Empty url should allways be invalid against the whitelist
     	assertFalse(Jsoup.isValid("<a href=\"\">Success</a>", whitelist));
     	// Domain constraint should be met to be valid against the whitelist.
@@ -269,25 +266,25 @@ public class CleanerTest {
     	assertTrue(Jsoup.isValid("<a href=\"#success\">Success</a>", whitelist));
     	// After removing support of a protocol, it should behave as usual. 
     	whitelist.removeProtocols("a", "href", "http");
-    	assertFalse(Jsoup.isValid("<a href=\"http://cdn.jsoup.org:8080/resources/success.html\">Success</a>", whitelist));
+    	assertFalse(Jsoup.isValid("<a href=\"http://cdn.knowings.fr:8080/resources/success.html\">Success</a>", whitelist));
     	
     	// Tests upon src attribute
     	whitelist.addTags("iframe");
     	whitelist.addAttributes("iframe", "src", "title");
     	whitelist.addProtocols("iframe", "src", "http", "https");
-    	whitelist.addDomains("iframe", "src", "jsoup.org");
+    	whitelist.addDomains("iframe", "src", "knowings.fr");
     	assertTrue(Jsoup.isValid("<iframe>Success</iframe>", whitelist));
     	assertTrue(Jsoup.isValid("<iframe title=\"success\">Success</iframe>", whitelist));
     	// Subdomain should be accepted
-    	assertTrue(Jsoup.isValid("<iframe src=\"http://cdn.jsoup.org:8080/resources/success.html\"></iframe>", whitelist));
+    	assertTrue(Jsoup.isValid("<iframe src=\"http://cdn.knowings.fr:8080/resources/success.html\"></iframe>", whitelist));
     	// Without proper protocol it should behave as usual
-    	assertFalse(Jsoup.isValid("<iframe src=\"//cdn.jsoup.org:8080/resources/success.html\"></iframe>", whitelist));
+    	assertFalse(Jsoup.isValid("<iframe src=\"//cdn.knowings.fr:8080/resources/success.html\"></iframe>", whitelist));
     	// Empty url should allways be invalid against the whitelist
     	assertFalse(Jsoup.isValid("<iframe src=\"\"></iframe>", whitelist));
     	// Domain constraint should be met to be valid against the whitelist.
     	assertFalse(Jsoup.isValid("<iframe src=\"http://www.knowings.com\"></iframe>", whitelist));
     	// After removing support of a protocol, it should behave as usual. 
     	whitelist.removeProtocols("iframe", "src", "http");
-    	assertFalse(Jsoup.isValid("<iframe src=\"http://cdn.jsoup.org:8080/resources/success.html\"></iframe>", whitelist));
+    	assertFalse(Jsoup.isValid("<iframe src=\"http://cdn.knowings.fr:8080/resources/success.html\"></iframe>", whitelist));
     }
 }
