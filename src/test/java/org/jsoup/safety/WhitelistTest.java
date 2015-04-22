@@ -67,12 +67,12 @@ public class WhitelistTest {
 	@Test
 	public void testIsDomainConfigured() {
 		Whitelist whitelist = Whitelist.none();
-		assertFalse(whitelist.isDomainConfigured("a", "href", "knowings.fr"));
+		assertFalse(whitelist.isDomainConfigured("a", "href", "jsoup.org"));
 		// Once added, it should be considered as configured.
-		whitelist.addDomains("a", "href", "knowings.fr");
-		assertTrue(whitelist.isDomainConfigured("a", "href", "knowings.fr"));
+		whitelist.addDomains("a", "href", "jsoup.org");
+		assertTrue(whitelist.isDomainConfigured("a", "href", "jsoup.org"));
 		// Check pre-configured whitelists behave correctly.
-		assertFalse(Whitelist.basic().isDomainConfigured("a","href", "knowings.fr"));
+		assertFalse(Whitelist.basic().isDomainConfigured("a","href", "jsoup.org"));
 	}
 
 }
